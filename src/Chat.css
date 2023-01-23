@@ -1,0 +1,28 @@
+.msg-bubble {
+    border-radius: 20px;
+    background-color: lightblue;
+    padding: 10px
+}
+.msg-list {
+    height: 560px;
+    width: 100%;
+    overflow: auto;
+    padding: 10px;
+}
+.msg-field {
+    position: fixed;
+    top: 90%;
+    width:100%;
+    height: 100%;
+    background-color: antiquewhite;
+}
+.msg-field__area {
+    border-radius: 10px;
+    width: 70%;
+    max-width: 10cm;
+    margin: 10px;
+}
+.msg-field__button {
+    float:left;
+    margin: 10px;
+}
