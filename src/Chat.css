@@ -1,7 +1,19 @@
-.msg-bubble {
+.msg {
+    margin: 3px;
+}
+.author {
+    font-size: 12px;
+}
+
+.msg__bubble {
     border-radius: 20px;
     background-color: lightblue;
-    padding: 10px
+    padding: 10px;
+    animation: fadein .5s;
+}
+@keyframes fadein {
+    from { opacity: 0; padding: 0px;}
+    to   { opacity: 1; padding: 10px;}
 }
 .msg-list {
     height: 560px;

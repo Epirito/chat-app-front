@@ -4,11 +4,28 @@ import { io } from 'socket.io-client'
 //import { auth } from './firebase'
 
 function ChatMessage(props) {
-    return (<div><span className='msg-bubble'>{props.text}</span></div>)
+    // Old protocol: just text
+    if (typeof props.message === 'string') return (<div className='msg'>
+            <span className='msg__bubble'>{props.message}</span>
+        </div>)
+    
+    // New protocol: messages have authors
+    const authorDiv = props.newAuthor ? <div className='author'>
+            {props.message.author+':'}
+        </div> : null
+    
+    return (
+        <div>
+            {authorDiv}
+            <div className='msg'> 
+                <span className='msg__bubble'>{props.message.content}</span>
+            </div>
+        </div>
+    )
 }
 function MessageList(props) {
     return (<div className='msg-list'>
-        { props.messages.map(x => <ChatMessage text={x}/>) }
+        { props.messages.map((x,i) => <ChatMessage key={i} message={x} newAuthor={x.author && props.messages[i-1]?.author!==x.author}/>) }
     </div>)
 }
 function MessageField(props) {
@@ -25,7 +42,7 @@ function FunctionalChat() {
     const [input, setInput] = useState('')
     function newMessage(msg) {
         setMessages(messages.concat([msg]))
-    } 
+    }
     useEffect(()=>{
         socket.on('connected', (username)=>{
             newMessage("hello")
