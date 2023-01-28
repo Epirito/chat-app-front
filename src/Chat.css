@@ -1,10 +1,27 @@
 .msg {
     margin: 3px;
 }
+.chat {
+    width: 100%;
+}
 .author {
     font-size: 12px;
 }
-
+.top-bar {
+    background-color:antiquewhite;
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid;
+}
+.icon {
+    height: 20px;
+    margin: 10px;
+    position: absolute;
+    right: 10px;
+}
+.icon:hover {
+    cursor: pointer;
+}
 .msg__bubble {
     border-radius: 20px;
     background-color: lightblue;
@@ -16,16 +33,20 @@
     to   { opacity: 1; padding: 10px;}
 }
 .msg-list {
-    height: 560px;
-    width: 100%;
+    height: calc(100vh - 140px);
+    width: 100vw;
     overflow: auto;
     padding: 10px;
+    margin-left: 10px;
+}
+.scroll-down {
+    margin-top: 20px
 }
 .msg-field {
+    border-top: 1px solid;
     position: fixed;
-    top: 90%;
+    bottom: 0%;
     width:100%;
-    height: 100%;
     background-color: antiquewhite;
 }
 .msg-field__area {
@@ -33,6 +54,7 @@
     width: 70%;
     max-width: 10cm;
     margin: 10px;
+    resize: none;
 }
 .msg-field__button {
     float:left;

@@ -1,8 +1,14 @@
 import './Chat.css'
 import { Component, useEffect, useState} from 'react'
 import { io } from 'socket.io-client'
-//import { auth } from './firebase'
+import userIcon from './assets/user.svg'
+import { useRef } from 'react'
 
+function TopBar(props) {
+    return (<div className='top-bar'>
+        <img onClick={props.onClickProfile} className='icon' src={userIcon}/>
+    </div>)
+}
 function ChatMessage(props) {
     // Old protocol: just text
     if (typeof props.message === 'string') return (<div className='msg'>
@@ -26,11 +32,13 @@ function ChatMessage(props) {
 function MessageList(props) {
     return (<div className='msg-list'>
         { props.messages.map((x,i) => <ChatMessage key={i} message={x} newAuthor={x.author && props.messages[i-1]?.author!==x.author}/>) }
+        <div className='scroll-down' ref={props.scrollDownRef}/>
     </div>)
 }
 function MessageField(props) {
-    return (<div className='msg-field'>
-                <textarea className='msg-field__area' onInput={props.onInput} value={props.message}/>
+    const minBlockHeight = 60
+    return (<div style={{height: Math.max(minBlockHeight, props.inputHeight*.9+20)+'px'}} className='msg-field'>
+                <textarea onKeyDown={props.onKeyDown} style={{height: props.inputHeight*.9+'px'}} className='msg-field__area' onInput={props.onInput} value={props.message}/>
                 <button className='msg-field__button' type='button' onClick={props.onSubmit}>Enviar</button>
             </div>)
 }
@@ -40,8 +48,11 @@ const socket = io('ws://127.0.0.1:3000', {
 function FunctionalChat() {
     const [messages, setMessages] = useState([])
     const [input, setInput] = useState('')
+    const [inputHeight, setInputHeight] = useState()
+    const scrollDownRef = useRef(null)
     function newMessage(msg) {
         setMessages(messages.concat([msg]))
+        scrollDownRef.current.scrollIntoView()
     }
     useEffect(()=>{
         socket.on('connected', (username)=>{
@@ -57,6 +68,7 @@ function FunctionalChat() {
     })
     function onInput(event) {
         setInput(event.target.value)
+        setInputHeight(event.target.scrollHeight)
     }
     function onSubmit() {
         if(input!=="") {
@@ -65,10 +77,15 @@ function FunctionalChat() {
         }
     }
     return (
-        <div>
-            <MessageList messages={messages}/>
-            <MessageField onInput={onInput} message={input} 
-                onSubmit={onSubmit}/>
+        <div className='chat'>
+            <TopBar onClickProfile={()=>{console.log('profile')}}/>
+            <MessageList messages={messages} scrollDownRef={scrollDownRef}/>
+            <MessageField onInput={onInput} onKeyDown={(event)=>{
+                if (event.key==='Enter') {
+                    onSubmit()
+                }
+            }} message={input} 
+                onSubmit={onSubmit} inputHeight={inputHeight}/>
         </div>
     )
 }
