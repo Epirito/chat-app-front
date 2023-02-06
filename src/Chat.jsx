@@ -55,9 +55,6 @@ function FunctionalChat() {
         scrollDownRef.current.scrollIntoView()
     }
     useEffect(()=>{
-        socket.on('connected', (username)=>{
-            newMessage("hello")
-        })
         socket.on('relayedMsg', (msg)=>{
             newMessage(msg)
         })
@@ -67,7 +64,7 @@ function FunctionalChat() {
         }
     })
     function onInput(event) {
-        setInput(event.target.value)
+        setInput(event.target.value.replace('\n', ''))
         setInputHeight(event.target.scrollHeight)
     }
     function onSubmit() {
