@@ -1,5 +1,5 @@
 import './Chat.css'
-import { Component, useEffect, useState} from 'react'
+import { Component, useEffect, useLayoutEffect, useState} from 'react'
 import { io } from 'socket.io-client'
 import userIcon from './assets/user.svg'
 import { useRef } from 'react'
@@ -37,8 +37,10 @@ function MessageList(props) {
 }
 function MessageField(props) {
     const minBlockHeight = 60
-    return (<div style={{height: Math.max(minBlockHeight, props.inputHeight*.9+20)+'px'}} className='msg-field'>
-                <textarea onKeyDown={props.onKeyDown} style={{height: props.inputHeight*.9+'px'}} className='msg-field__area' onInput={props.onInput} value={props.message}/>
+    return (<div style={{height: Math.max(minBlockHeight, props.inputHeight+10)+'px'}} className='msg-field'>
+                {/*style={{height: props.inputHeight+'px'}}*/}
+                <textarea ref={props.inputRef} style={{height: props.inputHeight-4+'px'}} onKeyDown={props.onKeyDown} className='msg-field__area' onInput={props.onInput} value={props.message}/>
+                <textarea ref={props.hiddenRef} style={{visibility: 'hidden'}} className='msg-field__area' value={props.message}/>
                 <button className='msg-field__button' type='button' onClick={props.onSubmit}>Enviar</button>
             </div>)
 }
@@ -50,6 +52,8 @@ function FunctionalChat() {
     const [input, setInput] = useState('')
     const [inputHeight, setInputHeight] = useState()
     const scrollDownRef = useRef(null)
+    const inputRef = useRef(null)
+    const hiddenRef = useRef(null)
     function newMessage(msg) {
         setMessages(messages.concat([msg]))
         scrollDownRef.current.scrollIntoView()
@@ -59,13 +63,15 @@ function FunctionalChat() {
             newMessage(msg)
         })
         return ()=>{
-            socket.off('connected')
             socket.off('relayedMsg')
         }
     })
+    useEffect(()=>{
+        console.log(hiddenRef.current.scrollHeight)
+        setInputHeight(hiddenRef.current.scrollHeight)
+    }, [input])
     function onInput(event) {
         setInput(event.target.value.replace('\n', ''))
-        setInputHeight(event.target.scrollHeight)
     }
     function onSubmit() {
         if(input!=="") {
@@ -82,7 +88,7 @@ function FunctionalChat() {
                     onSubmit()
                 }
             }} message={input} 
-                onSubmit={onSubmit} inputHeight={inputHeight}/>
+                onSubmit={onSubmit} inputHeight={inputHeight} inputRef={inputRef} hiddenRef={hiddenRef}/>
         </div>
     )
 }
